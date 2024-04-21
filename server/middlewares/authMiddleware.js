@@ -5,9 +5,10 @@ const protect = async (req, res, next) => {
   try {
     if (req.headers.authorization) {
       token = req.headers.authorization;
+      console.log(token);
 
       const decoded = JWT.verify(token, process.env.JWT_SECRET);
-      req.body.userId = decoded.id;
+      req.body._id = decoded.id;
       next();
     } else {
       res.status(400).json({
@@ -19,4 +20,4 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = protect;
+module.exports = { protect };
