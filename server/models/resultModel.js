@@ -28,7 +28,7 @@ const resultSchema = new mongoose.Schema({
         required: [true, "roll number is required"],
       },
       mark: {
-        type: Number,
+        type: String,
         required: [true, "mark is required"],
       },
     },

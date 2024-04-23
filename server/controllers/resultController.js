@@ -3,8 +3,9 @@ const XLSX = require("xlsx");
 
 const AddResultController = async (req, res) => {
   try {
-    console.log("inside add result controller")
-    const workbook = XLSX.readFile(req.file.path[0]);
+    const { year, semester, branch, subject, examType } = req.fields;
+
+    const workbook = XLSX.read(req.files.marks.path, { type: "file" });
 
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
@@ -12,12 +13,12 @@ const AddResultController = async (req, res) => {
     const marks = XLSX.utils.sheet_to_json(sheet);
 
     var result = await resultModel.create({
-      year: req.body.year,
-      semester: req.body.semester,
-      branch: req.body.branch,
-      subject: req.body.subject,
-      examType: req.body.examType,
-      marks: marks,
+      year,
+      semester,
+      branch,
+      subject,
+      examType,
+      marks,
     });
 
     await result.save();
@@ -30,6 +31,41 @@ const AddResultController = async (req, res) => {
   }
 };
 
+const GetResultController = async (req, res) => {
+  try {
+    const { year, semester, branch, subject, examType } = req.query;
+
+    const result = await resultModel.findOne({
+      year: parseInt(year),
+      semester: parseInt(semester),
+      branch: branch,
+      subject: subject,
+      examType: examType,
+    });
+
+    if (!result) {
+      return res.status(404).send({
+        message: "result not found",
+        success: false,
+      });
+    } else {
+      return res.status(200).send({
+        success: true,
+        data: {
+          result,
+        },
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: `Error in GetResultController ${error.meaasge}`,
+      success: false,
+      error,
+    });
+  }
+};
+
 module.exports = {
   AddResultController,
+  GetResultController,
 };

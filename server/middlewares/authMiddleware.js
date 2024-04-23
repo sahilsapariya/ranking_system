@@ -4,8 +4,7 @@ const protect = async (req, res, next) => {
   var token;
   try {
     if (req.headers.authorization) {
-      token = req.headers.authorization;
-      console.log(token);
+      token = req.headers.authorization.split(" ")[1];
 
       const decoded = JWT.verify(token, process.env.JWT_SECRET);
       req.body._id = decoded.id;
